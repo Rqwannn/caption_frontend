@@ -8,7 +8,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ErrorMessage from "../core/ErrorMessage";
 import { useState } from "react";
-import { addDataPicture } from "@/services/stream";
+import { inferenceIndoBERT, inferenceBigBird } from "@/services/stream";
 import { useUploadDialog } from "@/stores/upload-dialog-store";
 import { useImage } from "@/stores/image-store";
 import { useLoadingApi } from "@/stores/loading-api-store";
@@ -81,7 +81,14 @@ export default function FormDialog() {
       }
 
       setUploadDialogModal(false);
-      const res = await addDataPicture(formData);
+
+      let res = null;
+      
+      if (data.model == "indobert"){
+        res = await inferenceIndoBERT(formData);
+      } else if (data.model == "bigbird"){
+        res = await inferenceBigBird(formData);
+      }
 
       if (res) {
         setData(res.data);
